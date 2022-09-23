@@ -1,6 +1,7 @@
 use std::{env, process};
 
 mod basic;
+mod gif_download;
 mod grep;
 mod help;
 

@@ -1,5 +1,6 @@
 use crate::{
     basic::{self, BuildableCommand, GenericCommand, HelpableCommand},
+    gif_download::GifSearchCommand,
     grep::GrepCommand,
 };
 
@@ -9,11 +10,15 @@ pub struct HelpCommand {
 
 impl basic::GenericCommand for HelpCommand {
     fn run(&self) -> Result<(), &'static str> {
-        if &self.command.as_str().to_lowercase() == "help" {
+        let curr_command_lower = &self.command.as_str().to_lowercase();
+        if curr_command_lower == "help" {
             HelpCommand::help();
             return Ok(());
-        } else if &self.command.as_str().to_lowercase() == "grep" {
+        } else if curr_command_lower == "grep" {
             GrepCommand::help();
+            return Ok(());
+        } else if curr_command_lower == "gifsrc" {
+            GifSearchCommand::help();
             return Ok(());
         }
 

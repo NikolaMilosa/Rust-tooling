@@ -1,4 +1,4 @@
-use crate::{grep::GrepCommand, help::HelpCommand};
+use crate::{gif_download::GifSearchCommand, grep::GrepCommand, help::HelpCommand};
 
 pub trait GenericCommand {
     fn run(&self) -> Result<(), &'static str>;
@@ -27,6 +27,7 @@ pub fn build(
     match lower_command.as_str() {
         "help" => return HelpCommand::build(args),
         "grep" => return GrepCommand::build(args),
+        "gifsrc" => return GifSearchCommand::build(args),
         _ => return Err("Command not found"),
     };
 }
