@@ -4,6 +4,7 @@ mod basic;
 mod gif_download;
 mod grep;
 mod help;
+mod touch;
 
 fn main() {
     let args = env::args().into_iter();

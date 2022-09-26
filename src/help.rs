@@ -2,6 +2,7 @@ use crate::{
     basic::{self, BuildableCommand, GenericCommand, HelpableCommand},
     gif_download::GifSearchCommand,
     grep::GrepCommand,
+    touch::TouchCommand,
 };
 
 pub struct HelpCommand {
@@ -19,6 +20,9 @@ impl basic::GenericCommand for HelpCommand {
             return Ok(());
         } else if curr_command_lower == "gifsrc" {
             GifSearchCommand::help();
+            return Ok(());
+        } else if curr_command_lower == "touch" {
+            TouchCommand::help();
             return Ok(());
         }
 
