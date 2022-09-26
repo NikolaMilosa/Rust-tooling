@@ -48,6 +48,16 @@ impl basic::GenericCommand for GifSearchCommand {
         let data: Result<Vec<_>, _> = res.bytes().collect();
         let data = data.unwrap();
 
+        let path = std::path::Path::new(&self.output_file);
+        let prefix = match path.parent() {
+            Some(prefix) => prefix,
+            None => return Err("Not a valid prefix path"),
+        };
+        match std::fs::create_dir_all(prefix) {
+            Ok(_) => {}
+            Err(_) => return Err("Cannot create the parent dirs"),
+        };
+
         let mut file = match File::create(&self.output_file) {
             Ok(file) => file,
             Err(_) => return Err("Cannot create file on specified path"),
