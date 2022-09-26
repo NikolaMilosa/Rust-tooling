@@ -1,12 +1,12 @@
 use std::{
-    env,
+    env::{self, Args},
     fs::File,
     io::{Read, Write},
 };
 
 use serde_json::Value;
 
-use crate::basic;
+use crate::basic::{self, GenericCommand};
 
 pub struct GifSearchCommand {
     term: String,
@@ -60,12 +60,11 @@ impl basic::GenericCommand for GifSearchCommand {
 
         Ok(())
     }
-}
 
-impl basic::BuildableCommand for GifSearchCommand {
-    fn build(
-        mut args: impl Iterator<Item = String>,
-    ) -> Result<Box<dyn basic::GenericCommand>, &'static str> {
+    fn build(mut args: Args) -> Result<Box<dyn GenericCommand>, &'static str>
+    where
+        Self: Sized,
+    {
         let term = match args.next() {
             Some(term) => term,
             None => return Err("Term argument not found!"),
@@ -104,10 +103,11 @@ impl basic::BuildableCommand for GifSearchCommand {
             output_file,
         }))
     }
-}
 
-impl basic::HelpableCommand for GifSearchCommand {
-    fn help() {
+    fn help()
+    where
+        Self: Sized,
+    {
         println!("gif command for searching gifs from Tenor API by term.");
         println!();
         println!("It accepts three parameters.");

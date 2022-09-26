@@ -1,6 +1,6 @@
-use std::fs::File;
+use std::{env::Args, fs::File};
 
-use crate::basic::{BuildableCommand, GenericCommand, HelpableCommand};
+use crate::basic::GenericCommand;
 
 pub struct TouchCommand {
     path: String,
@@ -24,12 +24,11 @@ impl GenericCommand for TouchCommand {
 
         Ok(())
     }
-}
 
-impl BuildableCommand for TouchCommand {
-    fn build(
-        mut args: impl Iterator<Item = String>,
-    ) -> Result<Box<dyn GenericCommand>, &'static str> {
+    fn build(mut args: Args) -> Result<Box<dyn GenericCommand>, &'static str>
+    where
+        Self: Sized,
+    {
         let path = match args.next() {
             Some(path) => path,
             None => return Err("Path argument not found!"),
@@ -37,10 +36,11 @@ impl BuildableCommand for TouchCommand {
 
         Ok(Box::new(TouchCommand { path }))
     }
-}
 
-impl HelpableCommand for TouchCommand {
-    fn help() {
+    fn help()
+    where
+        Self: Sized,
+    {
         println!("Touch command to create files.");
         println!();
         println!("It accepts one parameters.");

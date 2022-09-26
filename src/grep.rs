@@ -1,6 +1,6 @@
-use std::fs;
+use std::{env::Args, fs};
 
-use crate::basic::{self, BuildableCommand, GenericCommand, HelpableCommand};
+use crate::basic::GenericCommand;
 
 pub struct GrepCommand {
     pattern: String,
@@ -8,7 +8,7 @@ pub struct GrepCommand {
     match_casing: bool,
 }
 
-impl basic::GenericCommand for GrepCommand {
+impl GenericCommand for GrepCommand {
     fn run(&self) -> Result<(), &'static str> {
         let contents = match fs::read_to_string(&self.path) {
             Ok(content) => content,
@@ -29,12 +29,11 @@ impl basic::GenericCommand for GrepCommand {
 
         Ok(())
     }
-}
 
-impl BuildableCommand for GrepCommand {
-    fn build(
-        mut args: impl Iterator<Item = String>,
-    ) -> Result<Box<dyn GenericCommand>, &'static str> {
+    fn build(mut args: Args) -> Result<Box<dyn GenericCommand>, &'static str>
+    where
+        Self: Sized,
+    {
         let pattern = match args.next() {
             Some(pattern) => pattern,
             None => return Err("Pattern not found"),
@@ -62,10 +61,11 @@ impl BuildableCommand for GrepCommand {
             match_casing,
         }))
     }
-}
 
-impl HelpableCommand for GrepCommand {
-    fn help() {
+    fn help()
+    where
+        Self: Sized,
+    {
         println!("grep is a small tool developed for better searching of documents.");
         println!();
         println!("It accepts three parameters.");

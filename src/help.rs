@@ -1,50 +1,39 @@
-use crate::{
-    basic::{self, BuildableCommand, GenericCommand, HelpableCommand},
-    gif_download::GifSearchCommand,
-    grep::GrepCommand,
-    touch::TouchCommand,
-};
+use std::env::Args;
+
+use crate::basic::GenericCommand;
 
 pub struct HelpCommand {
-    command: String,
+    pub command: String,
+    pub available_commands: Vec<(
+        &'static str,
+        fn(),
+        fn(Args) -> Result<Box<dyn GenericCommand>, &'static str>,
+    )>,
 }
 
-impl basic::GenericCommand for HelpCommand {
+impl GenericCommand for HelpCommand {
     fn run(&self) -> Result<(), &'static str> {
-        let curr_command_lower = &self.command.as_str().to_lowercase();
-        if curr_command_lower == "help" {
-            HelpCommand::help();
-            return Ok(());
-        } else if curr_command_lower == "grep" {
-            GrepCommand::help();
-            return Ok(());
-        } else if curr_command_lower == "gifsrc" {
-            GifSearchCommand::help();
-            return Ok(());
-        } else if curr_command_lower == "touch" {
-            TouchCommand::help();
-            return Ok(());
+        for command in &self.available_commands {
+            if command.0 == &self.command {
+                command.1();
+                return Ok(());
+            }
         }
 
-        Err("Command not found")
+        return Err("Unknown command");
     }
-}
 
-impl BuildableCommand for HelpCommand {
-    fn build(
-        mut args: impl Iterator<Item = String>,
-    ) -> Result<Box<dyn GenericCommand>, &'static str> {
-        let command = match args.next() {
-            Some(command) => command,
-            None => return Err("Unknown command"),
-        };
-
-        Ok(Box::new(HelpCommand { command }))
+    fn build(_args: Args) -> Result<Box<dyn GenericCommand>, &'static str>
+    where
+        Self: Sized,
+    {
+        panic!("Not implemented!")
     }
-}
 
-impl HelpableCommand for HelpCommand {
-    fn help() {
+    fn help()
+    where
+        Self: Sized,
+    {
         println!("help command for the cli.");
         println!();
         println!("It accepts one parameters.");

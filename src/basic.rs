@@ -1,21 +1,26 @@
-use crate::{
-    gif_download::GifSearchCommand, grep::GrepCommand, help::HelpCommand, touch::TouchCommand,
-};
+use std::env::Args;
+
+use crate::help::HelpCommand;
 
 pub trait GenericCommand {
     fn run(&self) -> Result<(), &'static str>;
-}
 
-pub trait BuildableCommand {
-    fn build(args: impl Iterator<Item = String>) -> Result<Box<dyn GenericCommand>, &'static str>;
-}
+    fn build(args: Args) -> Result<Box<dyn GenericCommand>, &'static str>
+    where
+        Self: Sized;
 
-pub trait HelpableCommand {
-    fn help();
+    fn help()
+    where
+        Self: Sized;
 }
 
 pub fn build(
-    mut args: impl Iterator<Item = String>,
+    mut args: Args,
+    commands: Vec<(
+        &'static str,
+        fn(),
+        fn(Args) -> Result<Box<dyn GenericCommand>, &'static str>,
+    )>,
 ) -> Result<Box<dyn GenericCommand>, &'static str> {
     args.next();
 
@@ -26,11 +31,22 @@ pub fn build(
 
     let lower_command = spawned_command.as_str().to_lowercase();
 
-    match lower_command.as_str() {
-        "help" => return HelpCommand::build(args),
-        "grep" => return GrepCommand::build(args),
-        "gifsrc" => return GifSearchCommand::build(args),
-        "touch" => return TouchCommand::build(args),
-        _ => return Err("Command not found"),
-    };
+    if lower_command == "help" {
+        let command = match args.next() {
+            Some(command) => command,
+            None => return Err("Missing command for the help command"),
+        };
+        return Ok(Box::new(HelpCommand {
+            command: command,
+            available_commands: commands,
+        }));
+    }
+
+    for command in commands {
+        if command.0 == lower_command.as_str() {
+            return command.2(args);
+        }
+    }
+
+    return Err("Command not found");
 }
