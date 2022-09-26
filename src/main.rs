@@ -6,12 +6,14 @@ use std::{
 use basic::GenericCommand;
 use gif_download::GifSearchCommand;
 use grep::GrepCommand;
+use rm::RmCommand;
 use touch::TouchCommand;
 
 mod basic;
 mod gif_download;
 mod grep;
 mod help;
+mod rm;
 mod touch;
 
 fn main() {
@@ -23,6 +25,7 @@ fn main() {
         ("gifsrc", GifSearchCommand::help, GifSearchCommand::build),
         ("grep", GrepCommand::help, GrepCommand::build),
         ("touch", TouchCommand::help, TouchCommand::build),
+        ("rm", RmCommand::help, RmCommand::build),
     ];
 
     let args = env::args().into_iter();
