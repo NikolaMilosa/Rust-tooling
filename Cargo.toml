@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 reqwest = "0.9.18"
 serde_json = "1.0.85"
+webbrowser = "0.8.0"

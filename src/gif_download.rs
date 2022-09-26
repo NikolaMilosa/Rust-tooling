@@ -13,18 +13,14 @@ pub struct GifSearchCommand {
     size: usize,
     order: usize,
     output_file: String,
+    api_key: String,
 }
 
 impl basic::GenericCommand for GifSearchCommand {
     fn run(&self) -> Result<(), &'static str> {
-        let api_key = match env::var("GIF_API_KEY") {
-            Ok(api_key) => api_key,
-            Err(_) => return Err("Api key for Tenor API not found"),
-        };
-
         let url = format!(
             "https://tenor.googleapis.com/v2/search?q={}&key={}&client_key={}&limit={}",
-            &self.term, api_key, "Rusting", &self.size
+            &self.term, &self.api_key, "Rusting", &self.size
         );
 
         let mut res = match reqwest::get(&url) {
@@ -106,11 +102,17 @@ impl basic::GenericCommand for GifSearchCommand {
             None => return Err("Output path argument not found!"),
         };
 
+        let api_key = match env::var("GIF_API_KEY") {
+            Ok(api_key) => api_key,
+            Err(_) => return Err("Api key for Tenor API not found"),
+        };
+
         Ok(Box::new(GifSearchCommand {
             term,
             size,
             order,
             output_file,
+            api_key,
         }))
     }
 
