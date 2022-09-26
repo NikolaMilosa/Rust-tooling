@@ -8,6 +8,7 @@ use gif_download::GifSearchCommand;
 use grep::GrepCommand;
 use rm::RmCommand;
 use touch::TouchCommand;
+use yt_search::YtSearchCommand;
 
 mod basic;
 mod gif_download;
@@ -15,6 +16,7 @@ mod grep;
 mod help;
 mod rm;
 mod touch;
+mod yt_search;
 
 fn main() {
     let available_commands: Vec<(
@@ -26,6 +28,7 @@ fn main() {
         ("grep", GrepCommand::help, GrepCommand::build),
         ("touch", TouchCommand::help, TouchCommand::build),
         ("rm", RmCommand::help, RmCommand::build),
+        ("yt", YtSearchCommand::help, YtSearchCommand::build),
     ];
 
     let args = env::args().into_iter();
