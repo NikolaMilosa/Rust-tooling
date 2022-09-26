@@ -32,14 +32,7 @@ pub fn build(
     let lower_command = spawned_command.as_str().to_lowercase();
 
     if lower_command == "help" {
-        let command = match args.next() {
-            Some(command) => command,
-            None => return Err("Missing command for the help command"),
-        };
-        return Ok(Box::new(HelpCommand {
-            command: command,
-            available_commands: commands,
-        }));
+        return HelpCommand::new(args, commands);
     }
 
     for command in commands {

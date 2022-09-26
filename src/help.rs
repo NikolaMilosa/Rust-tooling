@@ -3,12 +3,33 @@ use std::env::Args;
 use crate::basic::GenericCommand;
 
 pub struct HelpCommand {
-    pub command: String,
-    pub available_commands: Vec<(
+    command: String,
+    available_commands: Vec<(
         &'static str,
         fn(),
         fn(Args) -> Result<Box<dyn GenericCommand>, &'static str>,
     )>,
+}
+
+impl HelpCommand {
+    pub fn new(
+        mut args: Args,
+        available_commands: Vec<(
+            &'static str,
+            fn(),
+            fn(Args) -> Result<Box<dyn GenericCommand>, &'static str>,
+        )>,
+    ) -> Result<Box<dyn GenericCommand>, &'static str> {
+        let command = match args.next() {
+            Some(command) => command,
+            None => return Err("Missing command for the help command"),
+        };
+
+        return Ok(Box::new(HelpCommand {
+            command: command,
+            available_commands: available_commands,
+        }));
+    }
 }
 
 impl GenericCommand for HelpCommand {
